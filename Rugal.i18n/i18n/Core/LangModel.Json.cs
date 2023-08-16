@@ -1,7 +1,4 @@
-﻿using Rugal.i18n.i18n.Core;
-using Rugal.i18n.Model;
-
-namespace Rugal.i18n.Core
+﻿namespace Rugal.i18n.Core
 {
     public partial class LangModel
     {

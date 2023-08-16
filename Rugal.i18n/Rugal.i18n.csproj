@@ -10,6 +10,7 @@
 		<FileVersion>$(AssemblyVersion)-beta</FileVersion>
 		<Version>$(AssemblyVersion)-beta</Version>
 		<Authors>Rugal</Authors>
+		<RepositoryUrl>https://github.com/john2653589/Rugal.i18n</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
