@@ -7,6 +7,7 @@ namespace Rugal.i18n.Model
         public string JsRootPath { get; set; } = "Lang";
         public string JsViewPath { get; set; } = "View";
         public string JsSharedPath { get; set; } = "Shared";
+        public bool IsRandomLoadJs { get; set; } = true;
         public FileNameCaseType JsFileNameCase { get; set; } = FileNameCaseType.Lower;
         private Func<LangModel, IEnumerable<string>> CustomJsPathFunc { get; set; }
         #endregion

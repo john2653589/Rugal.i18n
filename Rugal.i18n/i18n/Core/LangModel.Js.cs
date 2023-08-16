@@ -36,7 +36,7 @@ namespace Rugal.i18n.Core
             SetLanguage = FileNameCase(SetLanguage, Setting.JsFileNameCase);
             
             var JsFile = $"{SetLanguage}.js";
-            if (Setting.IsRandomLoad)
+            if (Setting.IsRandomLoadJs)
                 JsFile += $"?id={Guid.NewGuid()}";
 
             return JsFile;

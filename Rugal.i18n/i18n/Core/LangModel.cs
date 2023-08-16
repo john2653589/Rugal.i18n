@@ -13,8 +13,8 @@ namespace Rugal.i18n.Core
 
         #region Get Property
         public string Language => GetLanguage();
-        public List<string> UrlPath => GetUrlPath();
-        public List<string> RoutePath => GetRoutePath();
+        public IEnumerable<string> UrlPath => GetUrlPath();
+        public IEnumerable<string> RoutePath => GetRoutePath();
         #endregion
 
         public LangModel(
@@ -66,7 +66,7 @@ namespace Rugal.i18n.Core
         #endregion
 
         #region Private Process
-        private List<string> GetUrlPath()
+        private IEnumerable<string> GetUrlPath()
         {
             var ClearPath = HttpContext.Request.Path.Value
                 .TrimStart('/')
@@ -75,32 +75,43 @@ namespace Rugal.i18n.Core
             if (string.IsNullOrWhiteSpace(ClearPath))
                 return null;
 
-            var UrlPathArray = ClearPath
-                .Split('/')
-                .ToList();
+            var UrlPathValues = ClearPath.Split('/');
 
-            return UrlPathArray;
+            var Result = Setting.UrlTakeFrom switch
+            {
+                TakeFromType.FromLeft => UrlPathValues
+                    .Skip(Setting.UrlPathSkipCount)
+                    .Take(Setting.UrlPathTakeCount),
+
+                TakeFromType.FromRight => UrlPathValues
+                    .TakeLast(Setting.UrlPathTakeCount)
+                    .Skip(Setting.UrlPathSkipCount)
+            };
+
+            Result = Setting.FormatUrlPath(Result);
+            return Result;
         }
-        private List<string> GetRoutePath()
+        private IEnumerable<string> GetRoutePath()
         {
             if (!HttpContext.Request.RouteValues.Any())
                 return null;
 
-            var RouteValues = HttpContext.Request.RouteValues
+            var RoutePathValues = HttpContext.Request.RouteValues
                 .Select(Item => Item.Value.ToString());
 
             var Result = Setting.RouteTakeFrom switch
             {
-                RouteTakeFromType.FromLeft => RouteValues
-                    .Skip(Setting.RouteSkipCount)
-                    .Take(Setting.RouteTakeCount),
+                TakeFromType.FromLeft => RoutePathValues
+                    .Skip(Setting.RoutePathSkipCount)
+                    .Take(Setting.RoutePathTakeCount),
 
-                RouteTakeFromType.FromRight => RouteValues
-                    .TakeLast(Setting.RouteTakeCount)
-                    .Skip(Setting.RouteSkipCount)
+                TakeFromType.FromRight => RoutePathValues
+                    .TakeLast(Setting.RoutePathTakeCount)
+                    .Skip(Setting.RoutePathSkipCount)
             };
 
-            return Result.ToList();
+            Result = Setting.FormatRoutePath(Result);
+            return Result;
         }
         private string GetLanguage()
         {

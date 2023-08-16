@@ -9,22 +9,35 @@
 
         #region Setting Property
         public string DefaultLanguage { get; set; } = "en-us";
-        public string CookieLangKey { get; set; } = DefaultCookieLangKey;
-        public string HeaderLangKey { get; set; } = DefaultHeaderLangKey;
-        public bool IsRandomLoad { get; set; } = true;
         public LangFromType LangFrom { get; set; } = LangFromType.Header;
         public PathFindSortType PathFindSort { get; set; } = PathFindSortType.Url_Route;
-        public RouteTakeFromType RouteTakeFrom { get; set; } = RouteTakeFromType.FromLeft;
+        #endregion
+
+        #region Cookie Setting
+        public string CookieLangKey { get; set; } = DefaultCookieLangKey;
         private Func<string, string> CookieFormatFunc { get; set; }
+        #endregion
+
+        #region Header Setting
+        public string HeaderLangKey { get; set; } = DefaultHeaderLangKey;
         private Func<string, string> HeaderFormatFunc { get; set; }
         #endregion
 
-        #region Route Setting
-        public int RouteSkipCount { get; set; } = 0;
-        public int RouteTakeCount { get; set; } = 5;
+        #region Url Path Setting
+        public TakeFromType UrlTakeFrom { get; set; } = TakeFromType.FromLeft;
+        public int UrlPathSkipCount { get; set; } = 0;
+        public int UrlPathTakeCount { get; set; } = 5;
+        private Func<IEnumerable<string>, IEnumerable<string>> UrlPathFormatFunc { get; set; }
         #endregion
 
-        #region With Lang Set
+        #region Route Path Setting
+        public TakeFromType RouteTakeFrom { get; set; } = TakeFromType.FromLeft;
+        public int RoutePathSkipCount { get; set; } = 0;
+        public int RoutePathTakeCount { get; set; } = 5;
+        private Func<IEnumerable<string>, IEnumerable<string>> RoutePathFormatFunc { get; set; }
+        #endregion
+
+        #region With Setting Method
         public LangSetting WithHeaderLangKey(string _HeaderLangKey)
         {
             HeaderLangKey = _HeaderLangKey;
@@ -50,6 +63,16 @@
             HeaderFormatFunc = _FormatFunc;
             return this;
         }
+        public LangSetting WithRoutePathFormat(Func<IEnumerable<string>, IEnumerable<string>> _FormatFunc)
+        {
+            RoutePathFormatFunc = _FormatFunc;
+            return this;
+        }
+        public LangSetting WithUrlPathFormat(Func<IEnumerable<string>, IEnumerable<string>> _FormatFunc)
+        {
+            UrlPathFormatFunc = _FormatFunc;
+            return this;
+        }
         #endregion
 
         #region Use Lang Set
@@ -61,29 +84,6 @@
         public LangSetting UseHeaderLang()
         {
             LangFrom = LangFromType.Header;
-            return this;
-        }
-        #endregion
-
-        #region With Route Set
-        public LangSetting WithRouteSkipCount(int _RouteSkipCount)
-        {
-            RouteSkipCount = _RouteSkipCount;
-            return this;
-        }
-        public LangSetting WithRouteTakeCount(int _RouteTakeCount)
-        {
-            RouteTakeCount = _RouteTakeCount;
-            return this;
-        }
-        public LangSetting WithPathFindSort(PathFindSortType _PathFindSort)
-        {
-            PathFindSort = _PathFindSort;
-            return this;
-        }
-        public LangSetting WithRouteTakeFrom(RouteTakeFromType _RouteTakeFrom)
-        {
-            RouteTakeFrom = _RouteTakeFrom;
             return this;
         }
         #endregion
@@ -105,6 +105,22 @@
             var Result = HeaderFormatFunc.Invoke(_HeaderLang);
             return Result;
         }
+        public IEnumerable<string> FormatRoutePath(IEnumerable<string> Paths)
+        {
+            if (RoutePathFormatFunc is null)
+                return Paths;
+
+            var Reuslt = RoutePathFormatFunc?.Invoke(Paths);
+            return Reuslt;
+        }
+        public IEnumerable<string> FormatUrlPath(IEnumerable<string> Paths)
+        {
+            if (UrlPathFormatFunc is null)
+                return Paths;
+
+            var Result = UrlPathFormatFunc?.Invoke(Paths);
+            return Result;
+        }
         #endregion
     }
     public enum LangFromType
@@ -112,7 +128,7 @@
         Cookie,
         Header,
     }
-    public enum RouteTakeFromType
+    public enum TakeFromType
     {
         FromLeft,
         FromRight,
