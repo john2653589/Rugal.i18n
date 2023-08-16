@@ -152,10 +152,12 @@ namespace Rugal.i18n.Core
                 _ => FileName
             };
 
-            var HeadChar = FileName.First().ToString().ToUpper();
-            var OtherChar = string.Join("", FileName.Skip(1).Take(FileName.Length - 1)).ToLower();
-
-            CaseFileName = $"{HeadChar}{OtherChar}";
+            if (Case == FileNameCaseType.HeadUpper)
+            {
+                var HeadChar = FileName.First().ToString().ToUpper();
+                var OtherChar = string.Join("", FileName.Skip(1).Take(FileName.Length - 1)).ToLower();
+                CaseFileName = $"{HeadChar}{OtherChar}";
+            }
             return CaseFileName;
         }
         #endregion
