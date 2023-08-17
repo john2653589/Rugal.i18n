@@ -140,6 +140,7 @@
     }
     public enum LanguageType
     {
+        None,
         zh_TW,
         zh_Hant,
         en_US,

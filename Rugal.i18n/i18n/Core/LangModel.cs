@@ -13,6 +13,7 @@ namespace Rugal.i18n.Core
 
         #region Get Property
         public string Language => GetLanguage();
+        public LanguageType LanguageType => GetLanguageType();
         public IEnumerable<string> UrlPath => GetUrlPath();
         public IEnumerable<string> RoutePath => GetRoutePath();
         #endregion
@@ -139,6 +140,14 @@ namespace Rugal.i18n.Core
             }
 
             return null;
+        }
+        private LanguageType GetLanguageType()
+        {
+            var ParseLang = Language.Replace('-', '_');
+            if (!Enum.TryParse<LanguageType>(ParseLang, out var Result))
+                return LanguageType.None;
+
+            return Result;
         }
         private static string FileNameCase(string FileName, FileNameCaseType Case)
         {
