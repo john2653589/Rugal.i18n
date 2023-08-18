@@ -1,26 +1,34 @@
-
 /**
- *  LangModel.js v1.0.0
+ *  LangModel.js v1.0.2.3
  *  From Rugal Tu
  * */
-
 class LangModel {
 
     constructor() {
         this.LangKey = {};
-        this.DefaultLang = 'shared';
-        this.CurrentLang = this.DefaultLang;
+        this.CurrentLang = 'shared';
     }
 
     Get(Key, Lang = this.CurrentLang) {
         Lang = Lang.toLowerCase();
         let LangDic = this.LangKey[Lang];
-        if (LangDic == undefined)
+        if (LangDic == null)
             return Key;
 
         let Value = LangDic[Key];
         Value = Value ?? Key;
         return Value;
+    }
+
+    GetList(Keys = [], Lang = this.CurrentLang) {
+        Lang = Lang.toLowerCase();
+
+        let LangDic = this.LangKey[Lang];
+        if (LangDic == null)
+            return Keys;
+
+        let Values = Keys.map(Item => LangDic[Item] ?? Item);
+        return Values
     }
 
     Add(KeyValue, Lang = this.CurrentLang) {
@@ -44,14 +52,14 @@ class LangModel {
         return LangDic;
     }
 
-    AsLang(Lang = this.CurrentLang) {
+    WithClone(Lang = this.CurrentLang) {
         let NewModel = new LangModel();
         NewModel.LangKey = this.LangKey;
-        NewModel.SetLang(Lang);
+        NewModel.WithLang(Lang);
         return NewModel;
     }
 
-    SetLang(Lang) {
+    WithLang(Lang) {
         this.CurrentLang = Lang.toLowerCase();
         return this;
     }
