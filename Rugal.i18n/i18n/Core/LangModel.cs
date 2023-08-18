@@ -144,7 +144,7 @@ namespace Rugal.i18n.Core
         private LanguageType GetLanguageType()
         {
             var ParseLang = Language.Replace('-', '_');
-            if (!Enum.TryParse<LanguageType>(ParseLang, out var Result))
+            if (!Enum.TryParse<LanguageType>(ParseLang, true, out var Result))
                 return LanguageType.None;
 
             return Result;
