@@ -64,5 +64,6 @@ namespace Rugal.i18n.Extention
 
             return Setting;
         }
+
     }
 }
