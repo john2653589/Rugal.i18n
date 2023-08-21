@@ -13,7 +13,7 @@ namespace Rugal.i18n.Core
 
         #region Get Property
         public string Language => GetLanguage();
-        public LanguageType LanguageType => GetLanguageType();
+        public Enum LanguageType => GetLanguageType();
         public IEnumerable<string> UrlPath => GetUrlPath();
         public IEnumerable<string> RoutePath => GetRoutePath();
         #endregion
@@ -120,7 +120,7 @@ namespace Rugal.i18n.Core
             {
                 var Cookies = HttpContext.Request.Cookies;
                 if (!Cookies.Any(Item => Item.Key == Setting.CookieLangKey))
-                    return Setting.DefaultLanguage;
+                    return Setting.DefaultLanguageType.ToString();
 
                 var GetCookie = Cookies
                     .FirstOrDefault(Item => Item.Key == Setting.CookieLangKey);
@@ -141,18 +141,26 @@ namespace Rugal.i18n.Core
 
             return null;
         }
-        private LanguageType GetLanguageType()
+        private Enum GetLanguageType()
         {
             var ParseLang = Language.Replace('-', '_');
-            if (!Enum.TryParse<LanguageType>(ParseLang, true, out var Result))
-                return LanguageType.None;
 
-            return Result;
+            var UseLangType = Setting.DefaultLanguageType.GetType();
+
+            if (!Enum.TryParse(UseLangType, ParseLang, true, out var Result))
+                return Setting.DefaultLanguageType;
+
+            return Result as Enum;
         }
-        private static string FileNameCase(string FileName, FileNameCaseType Case)
+        private static string FileNameCase(Enum LangType, FileNameCaseType Case, FileNameReplaceType ReplaceType)
         {
-            if (string.IsNullOrWhiteSpace(FileName))
-                return FileName;
+            var FileName = LangType.ToString();
+            FileName = ReplaceType switch
+            {
+                FileNameReplaceType.DashToUnderLine => FileName.Replace('-', '_'),
+                FileNameReplaceType.UnderLineToDash => FileName.Replace('_', '-'),
+                _ => FileName,
+            };
 
             var CaseFileName = Case switch
             {

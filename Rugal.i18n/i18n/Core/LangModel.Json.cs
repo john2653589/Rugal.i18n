@@ -34,8 +34,7 @@
         #region Private Process
         private string LangFileName_Json()
         {
-            var SetLanguage = Language ?? Setting.DefaultLanguage;
-            SetLanguage = FileNameCase(SetLanguage, Setting.JsonFileNameCase);
+            var SetLanguage = FileNameCase(LanguageType, Setting.JsonFileNameCase, Setting.JsonFileNameReplace);
             var JsFile = $"{SetLanguage}.json";
 
             return JsFile;
@@ -45,6 +44,7 @@
             var SharedPath = LangPath_JsonShared();
             var ViewPath = LangPath_JsonView();
             JsonLang = new LangJson()
+                .WithSetting(Setting)
                 .WithJson(SharedPath)
                 .WithJson(ViewPath);
         }

@@ -1,24 +1,21 @@
 ﻿using System.Text.Json;
 using System.Reflection;
+using Rugal.i18n.Model;
 
 namespace Rugal.i18n.Core
 {
     public class LangJson
     {
         #region Public Property
-        public List<string> JsonFiles { get; set; }
+        public LangSetting Setting { get; set; }
+        public List<LangJsonInfo> JsonFiles { get; set; }
         public Dictionary<string, object> JsonLang { get; set; }
         #endregion
 
         public LangJson()
         {
-            JsonFiles = new List<string>();
+            JsonFiles = new List<LangJsonInfo>();
         }
-        public LangJson(string JsonPath) : this()
-        {
-            JsonFiles.Add(JsonPath);
-        }
-
         #region Public Method
         public virtual string Get(string LangKey)
         {
@@ -36,9 +33,20 @@ namespace Rugal.i18n.Core
             }
             return Value?.ToString();
         }
-        public virtual LangJson WithJson(string JsonPath)
+        public virtual LangJson WithJson(string JsonPath, Assembly TargetAssembly = null)
         {
-            JsonFiles.Add(JsonPath);
+            TargetAssembly ??= Setting.TargetAssembly;
+            var AddInfo = new LangJsonInfo()
+            {
+                JsonPath = JsonPath,
+                TargetAssembly = TargetAssembly
+            };
+            JsonFiles.Add(AddInfo);
+            return this;
+        }
+        public virtual LangJson WithJson(LangJsonInfo JsonInfo)
+        {
+            JsonFiles.Add(JsonInfo);
             return this;
         }
         public virtual LangJson InitJson(bool IsForce = false)
@@ -52,33 +60,31 @@ namespace Rugal.i18n.Core
 
             return this;
         }
+        public virtual LangJson WithSetting(LangSetting _Setting)
+        {
+            Setting = _Setting;
+            return this;
+        }
         #endregion
 
         #region Private Process
-        private void LoadJsonFile(string FullJsonPath)
+        private void LoadJsonFile(LangJsonInfo Info)
         {
             JsonLang ??= new Dictionary<string, object> { };
 
-            var GetAssembly = Assembly.GetExecutingAssembly();
-            var AssemblyName = GetAssembly.GetName().Name;
-
-            FullJsonPath = $"{AssemblyName}.{FullJsonPath}".ToLower();
-            var AllNames = GetAssembly.GetManifestResourceNames();
+            var FullJsonPath = $"{Info.AssemblyName}.{Info.JsonPath}".ToLower();
+            var AllNames = Info.TargetAssembly.GetManifestResourceNames();
             var FindNames = AllNames
                 .FirstOrDefault(Item => Item.ToLower() == FullJsonPath);
 
             if (FindNames is null)
                 return;
 
-            using var JsonStream = GetAssembly.GetManifestResourceStream(FindNames);
+            using var JsonStream = Info.TargetAssembly.GetManifestResourceStream(FindNames);
 
             using var Reader = new StreamReader(JsonStream);
             var JsonText = Reader.ReadToEnd();
             var GetLang = JsonSerializer.Deserialize<Dictionary<string, object>>(JsonText);
-            //var GetLang = JsonSerializer.Deserialize<Dictionary<string, object>>(JsonStream, new JsonSerializerOptions()
-            //{
-            //    Encoder = Encoding.UTF8.GetEncoder(),
-            //});
 
             if (GetLang is null)
                 return;
@@ -92,5 +98,11 @@ namespace Rugal.i18n.Core
             }
         }
         #endregion
+    }
+    public class LangJsonInfo
+    {
+        public string JsonPath { get; set; }
+        public string AssemblyName => TargetAssembly.GetName().Name;
+        public Assembly TargetAssembly { get; set; }
     }
 }

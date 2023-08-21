@@ -7,11 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Lang\Shared\zh-hant.json" />
     <Content Remove="wwwroot\lib\Rugal\i18n\LangModel.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Lang\Shared\zh-hant.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\lib\Rugal\i18n\LangModel.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rugal.i18n\Rugal.i18n.csproj" />
   </ItemGroup>
 
 </Project>

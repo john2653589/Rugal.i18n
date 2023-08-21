@@ -1,4 +1,6 @@
-﻿namespace Rugal.i18n.Model
+﻿using System.Reflection;
+
+namespace Rugal.i18n.Model
 {
     public partial class LangSetting
     {
@@ -8,7 +10,8 @@
         #endregion
 
         #region Setting Property
-        public string DefaultLanguage { get; set; } = "en-us";
+        public Assembly TargetAssembly { get; set; }
+        public Enum DefaultLanguageType { get; set; } = LanguageType.zh_Hant;
         public LangFromType LangFrom { get; set; } = LangFromType.Header;
         public PathFindSortType PathFindSort { get; set; } = PathFindSortType.Url_Route;
         #endregion
@@ -48,9 +51,9 @@
             HeaderLangKey = _LangKey;
             return this;
         }
-        public LangSetting WithDefaultLanguage(string _DefaultLanguage)
+        public LangSetting WithDefaultLanguageType(Enum _DefaultLanguageType)
         {
-            DefaultLanguage = _DefaultLanguage;
+            DefaultLanguageType = _DefaultLanguageType;
             return this;
         }
         public LangSetting WithCookieLangFormat(Func<string, string> _FormatFunc)
@@ -151,4 +154,12 @@
         Upper,
         HeadUpper,
     }
+    public enum FileNameReplaceType
+    {
+        None,
+        DashToUnderLine,
+        UnderLineToDash,
+    }
+
+
 }

@@ -32,9 +32,8 @@ namespace Rugal.i18n.Core
         #region Private Process
         private string LangFileName_Js()
         {
-            var SetLanguage = Language ?? Setting.DefaultLanguage;
-            SetLanguage = FileNameCase(SetLanguage, Setting.JsFileNameCase);
-            
+            var SetLanguage = FileNameCase(LanguageType, Setting.JsFileNameCase, Setting.JsFileNameReplace);
+
             var JsFile = $"{SetLanguage}.js";
             if (Setting.IsRandomLoadJs)
                 JsFile += $"?id={Guid.NewGuid()}";

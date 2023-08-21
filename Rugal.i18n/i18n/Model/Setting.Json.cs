@@ -9,6 +9,7 @@ namespace Rugal.i18n.Model
         public string JsonViewPath { get; set; } = "View";
         public string JsonSharedPath { get; set; } = "Shared";
         public FileNameCaseType JsonFileNameCase { get; set; } = FileNameCaseType.Lower;
+        public FileNameReplaceType JsonFileNameReplace { get; set; } = FileNameReplaceType.UnderLineToDash;
         private Func<LangModel, IEnumerable<string>> CustomJsonPathFunc { get; set; }
         #endregion
 

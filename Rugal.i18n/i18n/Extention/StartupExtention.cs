@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Rugal.i18n.Core;
 using Rugal.i18n.Model;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Rugal.i18n.Extention
 {
@@ -62,8 +64,8 @@ namespace Rugal.i18n.Extention
             if (JsonSharedPath is not null)
                 Setting.JsonSharedPath = JsonSharedPath;
 
+            Setting.TargetAssembly = Assembly.GetEntryAssembly();
             return Setting;
         }
-
     }
 }
