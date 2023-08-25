@@ -21,32 +21,34 @@ namespace Rugal.i18n.Core
             {
                 var Func = RolesFunc.Func as Func<LanguageType, Func<TModel, string>>;
                 var Result = Func.Invoke((LanguageType)Lang.LanguageType).Invoke(Data);
+                Result ??= Role.NullValue;
                 return Result;
             }
             else if (RolesFunc.RolesFuncFrom == RolesFuncFromType.FromDataValue)
             {
                 var Func = RolesFunc.Func as Func<TModel, string>;
                 var Result = Func.Invoke(Data);
+                Result ??= Role.NullValue;
                 return Result;
             }
             return null;
         }
-        public virtual LangSwitch WithSwitch<TModel>(string ColumnName, Func<LanguageType, Func<TModel, string>> Func)
+        public virtual LangSwitch WithSwitch<TModel>(string ColumnName, Func<LanguageType, Func<TModel, string>> Func, string NullValue = null)
         {
             if (!TypeRoles.TryGetValue(typeof(TModel), out var Role))
             {
-                Role = new LangSwitchRole(typeof(TModel));
+                Role = new LangSwitchRole(typeof(TModel), NullValue);
                 TypeRoles.Add(typeof(TModel), Role);
             }
             Role.With(ColumnName, Func);
             return this;
         }
 
-        public LangSwitch WithSwitchValue<TModel>(string ColumnName, Func<TModel, string> Func)
+        public LangSwitch WithSwitchValue<TModel>(string ColumnName, Func<TModel, string> Func, string NullValue = null)
         {
             if (!TypeRoles.TryGetValue(typeof(TModel), out var Role))
             {
-                Role = new LangSwitchRole(typeof(TModel));
+                Role = new LangSwitchRole(typeof(TModel), NullValue);
                 TypeRoles.Add(typeof(TModel), Role);
             }
             Role.WithValue(ColumnName, Func);
@@ -57,9 +59,14 @@ namespace Rugal.i18n.Core
     {
         private readonly Dictionary<string, RolesFunc> Roles = new();
         public readonly Type ModelType;
+        public string NullValue { get; set; }
         public LangSwitchRole(Type _ModelType)
         {
             ModelType = _ModelType;
+        }
+        public LangSwitchRole(Type _ModelType, string _NullValue) : this(_ModelType)
+        {
+            NullValue = _NullValue;
         }
         public void With(string ColumnName, Delegate Func)
         {
@@ -89,13 +96,11 @@ namespace Rugal.i18n.Core
             return RoleFunc;
         }
     }
-
     public class RolesFunc
     {
         public Delegate Func { get; set; }
         public RolesFuncFromType RolesFuncFrom { get; set; }
     }
-
     public enum RolesFuncFromType
     {
         FromLangType,
